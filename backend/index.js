@@ -25,36 +25,44 @@ function addPosition(person, quantity, price) {
 }
 
 function matchOrders() {
-  if (buyOrderBook.peekKey() >= -sellOrderBook.peekKey()) {
-    const buyOrder = buyOrderBook.dequeue();
-    const sellOrder = sellOrderBook.dequeue();
-    addPosition(buyOrder.person, 1, buyOrder.price);
-    addPosition(sellOrder.person, -1, buyOrder.price);
-    matchOrders();
-  }
+    if (-buyOrderBook.peekKey() >= sellOrderBook.peekKey()) {
+        const buyOrder = buyOrderBook.peek();
+        const sellOrder = sellOrderBook.peek();
+        if(buyOrder.quantity == sellOrder.quantity){
+            addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price)
+            addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price)
+            buyOrderBook.dequeue();
+            sellOrderBook.dequeue();
+        }else if(buyOrder.quantity > sellOrder.quantity){
+            addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price);
+            addPosition(buyOrder.person, sellOrder.quantity, buyOrder.price);
+            sellOrderBook.dequeue();
+            buyOrder.quantity -= sellOrder.quantity;
+        }else{
+            addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price);
+            addPosition(sellOrder.person, buyOrder.quantity, buyOrder.price);
+            buyOrderBook.dequeue();
+            sellOrder.quantity -= buyOrder.quantity;
+        }
+        
+        matchOrders();
+    }
 }
 
 app.use(express.json());
 
 app.post('/order', (req, res) => {
-  const { price, type, person } = req.body;
-  console.log(req.body);
-  console.log(price);
-  console.log(type);
-  console.log(person);
-  switch (type) {
-    case 'BUY':
-      buyOrderBook.enqueue(price, { price, person });
-      break;
-    case 'SELL':
-      sellOrderBook.enqueue(-price, { price, person });
-  }
-  matchOrders();
-  res.send({
-    bestBid: buyOrderBook.peekKey(),
-    bestAsk: sellOrderBook.peekKey(),
-    Positions,
-  });
+    const {price, type, person, quantity} = req.body;
+    switch (type) {
+        case "BUY": 
+            buyOrderBook.enqueue(-price, {price, quantity, person});
+        break
+        case "SELL":
+            sellOrderBook.enqueue(price, {price, quantity, person});
+    }
+    matchOrders();
+    res.send({bestBid: buyOrderBook.peekKey(), bestAsk: sellOrderBook.peekKey(), Positions});
+    
 });
 
 app.get('/', (req, res) => {
