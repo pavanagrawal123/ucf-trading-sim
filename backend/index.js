@@ -4,7 +4,9 @@ const port = 3000;
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require('socket.io');
-const io = new Server(server);
+const io = new Server(server, {  cors: {    origin: true  }});
+
+const cors = require('cors')
 
 require('google-closure-library');
 goog.require('goog.structs.PriorityQueue');
@@ -50,6 +52,8 @@ function matchOrders() {
 }
 
 app.use(express.json());
+
+app.use(cors())
 
 app.post('/order', (req, res) => {
     const {price, type, person, quantity} = req.body;
