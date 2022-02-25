@@ -16,47 +16,43 @@ var sellOrderBook = new goog.structs.PriorityQueue();
 var PNLs = {};
 var Positions = {};
 
-
 function addPosition(person, quantity, price, sign) {
-    if (!Positions[person]) {
-        Positions[person] = {
-            "position":sign*quantity,
-            "cash":-sign*price*quantity,
-            "orders":[]
-        };
-    }else{
-        Position[person].position+=sign*quantity;
-        Position[person].cash-=sign*price*quantity;
-    }
+  if (!Positions[person]) {
+    Positions[person] = {
+      position: sign * quantity,
+      cash: -sign * price * quantity,
+      orders: [],
+    };
+  } else {
+    Position[person].position += sign * quantity;
+    Position[person].cash -= sign * price * quantity;
+  }
 
-    Positions[person].orders.push({
-        price,quantity
-    });
-    
+  Positions[person].orders.push({
+    price,
+    quantity,
+  });
 }
 
 function matchOrders() {
-    if (-buyOrderBook.peekKey() >= sellOrderBook.peekKey()) {
-        const buyOrder = buyOrderBook.peek();
-        const sellOrder = sellOrderBook.peek();
-        if(buyOrder.quantity == sellOrder.quantity){
-            addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1)
-            addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1)
-            buyOrderBook.dequeue();
-            sellOrderBook.dequeue();
-        }else if(buyOrder.quantity > sellOrder.quantity){
-            addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
-            addPosition(buyOrder.person, sellOrder.quantity, buyOrder.price, 1);
-            sellOrderBook.dequeue();
-            buyOrder.quantity -= sellOrder.quantity;
-        }else{
-            addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1);
-            addPosition(sellOrder.person, buyOrder.quantity, buyOrder.price, -1);
-            buyOrderBook.dequeue();
-            sellOrder.quantity -= buyOrder.quantity;
-        }
-        
-        matchOrders();
+  if (-buyOrderBook.peekKey() >= sellOrderBook.peekKey()) {
+    const buyOrder = buyOrderBook.peek();
+    const sellOrder = sellOrderBook.peek();
+    if (buyOrder.quantity == sellOrder.quantity) {
+      addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1);
+      addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
+      buyOrderBook.dequeue();
+      sellOrderBook.dequeue();
+    } else if (buyOrder.quantity > sellOrder.quantity) {
+      addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
+      addPosition(buyOrder.person, sellOrder.quantity, buyOrder.price, 1);
+      sellOrderBook.dequeue();
+      buyOrder.quantity -= sellOrder.quantity;
+    } else {
+      addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1);
+      addPosition(sellOrder.person, buyOrder.quantity, buyOrder.price, -1);
+      buyOrderBook.dequeue();
+      sellOrder.quantity -= buyOrder.quantity;
     }
 
     matchOrders();
