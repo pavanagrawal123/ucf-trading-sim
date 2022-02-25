@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3000
 require("google-closure-library");
-goog.require("goog.structs.PriorityQueue")
+goog.require("goog.structs.PriorityQueue") 
 
 var buyOrderBook = new goog.structs.PriorityQueue();
 var sellOrderBook = new goog.structs.PriorityQueue();
