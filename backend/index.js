@@ -24,8 +24,8 @@ function addPosition(person, quantity, price, sign) {
       orders: [],
     };
   } else {
-    Position[person].position += sign * quantity;
-    Position[person].cash -= sign * price * quantity;
+    Positions[person].position += sign * quantity;
+    Positions[person].cash -= sign * price * quantity;
   }
 
   Positions[person].orders.push({
@@ -80,6 +80,9 @@ app.post('/order', (req, res) => {
   });
 });
 
+app.get('/order', (req, res) => {
+
+});
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -93,5 +96,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(3000, () => {
-  console.log('listening on *:3000');
+  console.log('listening on *:4000');
 });
