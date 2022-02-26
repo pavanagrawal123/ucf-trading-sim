@@ -1,24 +1,15 @@
 import logo from './logo.svg';
 import './App.css';
 import Button from '@mui/material/Button';
+import BuyButton from './components/BuyButton';
+import BuyForm from './components/BuyForm';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <Button variant="text">Text</Button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        {/* <BuyButton /> */}
+        <BuyForm />
       </header>
     </div>
   );
