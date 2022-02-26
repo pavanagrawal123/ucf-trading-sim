@@ -11,6 +11,15 @@ function SocketTester() {
     socket.on('disconnect', () => {
       console.log(socket.id);
     });
+
+    socket.on('orderMatched', (transaction) => {
+      console.log('MATHCED!');
+      console.log(transaction);
+    });
+
+    socket.on('tickPrice', (price) => {
+      console.log('WOW PriCe' + price.price);
+    });
   }, []);
 
 

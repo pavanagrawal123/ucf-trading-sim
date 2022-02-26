@@ -6,6 +6,8 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server, { cors: { origin: true } });
 
+let socket = null;
+
 const cors = require('cors');
 
 require('google-closure-library');
@@ -43,19 +45,65 @@ function matchOrders() {
       addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
       buyOrderBook.dequeue();
       sellOrderBook.dequeue();
+      emitOrderMatched(
+        buyOrder.person,
+        sellOrder.person,
+        buyOrder.quantity,
+        buyOrder.price
+      );
     } else if (buyOrder.quantity > sellOrder.quantity) {
       addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
       addPosition(buyOrder.person, sellOrder.quantity, buyOrder.price, 1);
       sellOrderBook.dequeue();
       buyOrder.quantity -= sellOrder.quantity;
+      emitOrderMatched(
+        buyOrder.person,
+        sellOrder.person,
+        sellOrder.quantity,
+        buyOrder.price
+      );
     } else {
       addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1);
       addPosition(sellOrder.person, buyOrder.quantity, buyOrder.price, -1);
       buyOrderBook.dequeue();
       sellOrder.quantity -= buyOrder.quantity;
+      emitOrderMatched(
+        buyOrder.person,
+        sellOrder.person,
+        buyOrder.quantity,
+        buyOrder.price
+      );
     }
 
     matchOrders();
+  }
+}
+
+function emitOrderMatched(buyer, seller, quantity, price) {
+  console.log('matched');
+  socket.emit('orderMatched', {
+    buyer: buyer,
+    seller: seller,
+    quantity: quantity,
+    price: price,
+  });
+}
+
+const priceHistory = [];
+
+function getAndEmitPrice() {
+  let newPrice = 0;
+  if (!buyOrderBook.isEmpty() && !sellOrderBook.isEmpty()) {
+    newPrice = (buyOrderBook.peek().price + sellOrderBook.peek().price) / 2;
+  } else if (!priceHistory.isEmpty()) {
+    newPrice = priceHistory[priceHistory.lastIndexOf()];
+  }
+  socket.emit('tickPrice', {
+    price: newPrice,
+  });
+  priceHistory.push(newPrice);
+  if (priceHistory.length == 3600) {
+    priceHistory.splice(0, 100);
   }
 }
 
@@ -87,8 +135,16 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-io.on('connection', (socket) => {
+let interval;
+
+io.on('connection', (soc) => {
   console.log('a user connected');
+
+  socket = soc;
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getAndEmitPrice(), 1000);
 
   socket.on('disconnect', (reason) => {
     console.log('a user disconnected');
