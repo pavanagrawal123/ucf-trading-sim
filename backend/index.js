@@ -13,8 +13,8 @@ const cors = require('cors');
 require('google-closure-library');
 goog.require('goog.structs.PriorityQueue');
 
-var buyOrderBook = new goog.structs.PriorityQueue();
-var sellOrderBook = new goog.structs.PriorityQueue();
+var buyOrderBook = [];
+var sellOrderBook = [];
 var PNLs = {};
 var Positions = {};
 
@@ -31,30 +31,29 @@ function addPosition(person, quantity, price, sign) {
   }
 
   Positions[person].orders.push({
-    price,
+    'price':price*sign,
     quantity,
   });
 }
 
 function matchOrders() {
-  if (-buyOrderBook.peekKey() >= sellOrderBook.peekKey()) {
-    const buyOrder = buyOrderBook.peek();
-    const sellOrder = sellOrderBook.peek();
+  if (buyOrderBook.length != 0 && sellOrderBook.length != 0 && buyOrderBook[0].price >= sellOrderBook[0].price) {
+    var buyOrder = buyOrderBook[0];
+    var sellOrder = sellOrderBook[0];
     if (buyOrder.quantity == sellOrder.quantity) {
       addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1);
       addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
-      buyOrderBook.dequeue();
-      sellOrderBook.dequeue();
       emitOrderMatched(
         buyOrder.person,
         sellOrder.person,
         buyOrder.quantity,
         buyOrder.price
       );
+      buyOrderBook.shift();
+      sellOrderBook.shift();
     } else if (buyOrder.quantity > sellOrder.quantity) {
       addPosition(sellOrder.person, sellOrder.quantity, buyOrder.price, -1);
       addPosition(buyOrder.person, sellOrder.quantity, buyOrder.price, 1);
-      sellOrderBook.dequeue();
       buyOrder.quantity -= sellOrder.quantity;
       emitOrderMatched(
         buyOrder.person,
@@ -62,10 +61,10 @@ function matchOrders() {
         sellOrder.quantity,
         buyOrder.price
       );
+      sellOrderBook.shift();
     } else {
       addPosition(buyOrder.person, buyOrder.quantity, buyOrder.price, 1);
       addPosition(sellOrder.person, buyOrder.quantity, buyOrder.price, -1);
-      buyOrderBook.dequeue();
       sellOrder.quantity -= buyOrder.quantity;
       emitOrderMatched(
         buyOrder.person,
@@ -73,6 +72,7 @@ function matchOrders() {
         buyOrder.quantity,
         buyOrder.price
       );
+      buyOrderBook.shift();
     }
 
     matchOrders();
@@ -89,12 +89,12 @@ function emitOrderMatched(buyer, seller, quantity, price) {
   });
 }
 
-const priceHistory = [];
+var priceHistory = [];
 
 function getAndEmitPrice() {
   let newPrice = 0;
-  if (!buyOrderBook.isEmpty() && !sellOrderBook.isEmpty()) {
-    newPrice = (buyOrderBook.peek().price + sellOrderBook.peek().price) / 2;
+  if (buyOrderBook.length!=0 && sellOrderBook.length!=0) {
+    newPrice = (buyOrderBook[0].price + sellOrderBook[0].price) / 2;
   } else if (priceHistory.length != 0) {
     newPrice = priceHistory[priceHistory.length - 1];
   }
@@ -115,22 +115,41 @@ app.post('/order', (req, res) => {
   const { price, type, person, quantity } = req.body;
   switch (type) {
     case 'BUY':
-      buyOrderBook.enqueue(-price, { price, quantity, person });
+      buyOrderBook.push({price, quantity, person});
+      buyOrderBook.sort((a,b) => b.price-a.price);
       break;
     case 'SELL':
-      sellOrderBook.enqueue(price, { price, quantity, person });
+      sellOrderBook.push({price, quantity, person});
+      sellOrderBook.sort((a,b) => a.price - b.price);
   }
   matchOrders();
   res.send({
-    bestBid: buyOrderBook.peekKey(),
-    bestAsk: sellOrderBook.peekKey(),
+    bestBid: buyOrderBook.length==0?-1:buyOrderBook[0].price,
+    bestAsk: sellOrderBook.length==0?-1:sellOrderBook[0].price,
     Positions,
   });
 });
 
-app.get('/order', (req, res) => {
-
+app.get('/orders', (req, res) => {
+  res.send({
+    buyOrderBook: buyOrderBook,
+    sellOrderBook: sellOrderBook
+  });
 });
+
+app.post('/remove', (req, res) => {
+  const {id, type} = req.body;
+  switch (type){
+    case 'BUY':
+      buyOrderBook.splice(id,1);
+      break;
+    case 'SELL':
+      sellOrderBook.splice(id,1);
+      break;
+  }
+});
+
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
