@@ -1,6 +1,6 @@
 const nodemon = require('nodemon');
 const ngrok = require('ngrok');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 nodemon({
   script: 'index.js',

@@ -13,10 +13,11 @@
     "express": "^4.17.3",
     "google-closure-library": "^20220104.0.0",
     "nodemon": "^2.0.15",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "yauzl": "^2.10.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15",
-    "ngrok": "^4.3.0"
+    "ngrok": "^4.3.0",
+    "nodemon": "^2.0.15"
   }
 }

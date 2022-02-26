@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 function SocketTester() {
 
   useEffect(() => {
-    const socket = io('https://8d4c-128-62-36-52.ngrok.io');
+    const socket = io('https://9c9f-128-62-33-76.ngrok.io');
     socket.on('connect', () => {
       console.log(socket.id);
     });
