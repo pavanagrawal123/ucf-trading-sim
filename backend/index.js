@@ -128,6 +128,9 @@ app.post('/order', (req, res) => {
   });
 });
 
+app.get('/order', (req, res) => {
+
+});
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -149,5 +152,5 @@ io.on('connection', (soc) => {
 });
 
 server.listen(3000, () => {
-  console.log('listening on *:3000');
+  console.log('listening on *:4000');
 });
