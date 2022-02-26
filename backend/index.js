@@ -96,7 +96,7 @@ function getAndEmitPrice() {
   if (!buyOrderBook.isEmpty() && !sellOrderBook.isEmpty()) {
     newPrice = (buyOrderBook.peek().price + sellOrderBook.peek().price) / 2;
   } else if (priceHistory.length != 0) {
-    newPrice = priceHistory[priceHistory.lastIndexOf()];
+    newPrice = priceHistory[priceHistory.length - 1];
   }
   socket.emit('tickPrice', {
     price: newPrice,
