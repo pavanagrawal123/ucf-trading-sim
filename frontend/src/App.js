@@ -1,8 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import Messages from './Messages';
 import MessageInput from './MessageInput';
 import './App.css';
+import moment from "moment";
+import 'chartjs-plugin-streaming';
+
 import {
   Chart as ChartJS,
   LinearScale,
@@ -14,7 +17,7 @@ import {
   Tooltip,
 } from 'chart.js';
 
-import { Line } from 'react-chartjs-2';
+import { Chart, Line } from 'react-chartjs-2';
 import faker from 'faker';
 
 ChartJS.register(
@@ -38,6 +41,45 @@ export const options = {
       text: 'Chart.js Line Chart',
     },
   },
+  scales: {
+    x: {
+        display: true,
+        type: "realtime",
+        distribution: "linear",
+        realtime: {
+          onRefresh: function (chart) {
+            chart.data.datasets[0].data.push({
+              x: moment(),
+              y: Math.random()
+            });
+          },
+          delay: 3000,
+          time: {
+            displayFormat: "h:mm"
+          }
+        },
+        ticks: {
+          displayFormats: 1,
+          maxRotation: 0,
+          minRotation: 0,
+          stepSize: 1,
+          maxTicksLimit: 30,
+          minUnit: "second",
+          source: "auto",
+          autoSkip: true,
+          callback: function (value) {
+            return moment(value, "HH:mm:ss").format("mm:ss");
+          }
+        }
+    },
+    y: {
+        display: true,
+        ticks: {
+          beginAtZero: true,
+          max: 1
+        }
+    }
+  }
 };
 
 const labels = [];
@@ -54,6 +96,14 @@ export const data = {
     
   ],
 };
+
+export function addData(chart, data) {
+  chart.data.labels.push();
+  chart.data.datasets.forEach((dataset) => {
+      dataset.data.push(3);
+  });
+  chart.update();
+}
 
 function App() {
   const [socket, setSocket] = useState(null);
@@ -77,7 +127,6 @@ function App() {
       ) : (
         <div>Not Connected</div>
       )}
-
       <Line options={options} data={data} />;
 
       </div>
