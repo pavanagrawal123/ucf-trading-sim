@@ -17,7 +17,7 @@ var buyOrderBook = [];
 var sellOrderBook = [];
 var PNLs = {};
 var Positions = {};
-
+var id = 0;
 function addPosition(person, quantity, price, sign) {
   if (!Positions[person]) {
     Positions[person] = {
@@ -122,13 +122,14 @@ app.post('/order', (req, res) => {
   const { price, type, person, quantity } = req.body;
   switch (type) {
     case 'BUY':
-      buyOrderBook.push({price, quantity, person});
+      buyOrderBook.push({price, quantity, person, "id": id});
       buyOrderBook.sort((a,b) => b.price-a.price);
       break;
     case 'SELL':
-      sellOrderBook.push({price, quantity, person});
+      sellOrderBook.push({price, quantity, person, "id": id});
       sellOrderBook.sort((a,b) => a.price - b.price);
   }
+  id++;
   emitOrderBook();
   matchOrders();
   res.send({
@@ -149,12 +150,27 @@ app.post('/remove', (req, res) => {
   const {id, type} = req.body;
   switch (type){
     case 'BUY':
-      buyOrderBook.splice(id,1);
+      for(var i = 0; i < buyOrderBook.length; i++){
+        if(buyOrderBook[i].id==id){
+          buyOrderBook.splice(i,1);
+          break;
+        }
+      }
       break;
     case 'SELL':
-      sellOrderBook.splice(id,1);
+      for(var i = 0; i < sellOrderBook.length; i++){
+        console.log(sellOrderBook[i].id);
+        if(sellOrderBook[i].id==id){
+          sellOrderBook.splice(i,1);
+          break;
+        }
+      }
       break;
   }
+  res.send({
+    buyOrderBook: buyOrderBook,
+    sellOrderBook: sellOrderBook
+  });
 });
 
 
