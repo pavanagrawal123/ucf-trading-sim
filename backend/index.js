@@ -74,7 +74,7 @@ function matchOrders() {
       );
       buyOrderBook.shift();
     }
-
+    emitOrderBook();
     matchOrders();
   }
 }
@@ -86,6 +86,13 @@ function emitOrderMatched(buyer, seller, quantity, price) {
     seller: seller,
     quantity: quantity,
     price: price,
+  });
+}
+
+function emitOrderBook() {
+  socket.emit('orderBook', {
+    buyOrderBook: buyOrderBook,
+    sellOrderBook:sellOrderBook
   });
 }
 
@@ -122,6 +129,7 @@ app.post('/order', (req, res) => {
       sellOrderBook.push({price, quantity, person});
       sellOrderBook.sort((a,b) => a.price - b.price);
   }
+  emitOrderBook();
   matchOrders();
   res.send({
     bestBid: buyOrderBook.length==0?-1:buyOrderBook[0].price,
