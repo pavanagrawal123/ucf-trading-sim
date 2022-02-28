@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import Messages from './Messages';
 import MessageInput from './MessageInput';
 import './App.css';
 import moment from "moment";
 import 'chartjs-plugin-streaming';
-
+import BuyForm from "./components/BuyForm"
+import OrderBook from './OrderBook';
 import {
   Chart as ChartJS,
   LinearScale,
@@ -18,7 +19,6 @@ import {
 } from 'chart.js';
 
 import { Chart, Line } from 'react-chartjs-2';
-import faker from 'faker';
 
 ChartJS.register(
   LinearScale,
@@ -89,7 +89,7 @@ export const data = {
   datasets: [
     {
       label: 'Dataset 1',
-      data: [],
+      data: [100,1000],
       borderColor: 'rgb(255, 99, 132)',
       backgroundColor: 'rgba(255, 99, 132, 0.5)',
     },
@@ -107,12 +107,25 @@ export function addData(chart, data) {
 
 function App() {
   const [socket, setSocket] = useState(null);
+  const [oData, setOData] = useState(null);
+  const chartRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io(`http://${window.location.hostname}:3000`);
+    const newSocket = io(`http://localhost:4000`);
     setSocket(newSocket);
+    newSocket.on('orderBook', (orderBook) => {
+      setOData(orderBook);
+    });
+    newSocket.on('tickPrice', (pricing) => {
+      const chart = chartRef.current;
+      chart.data.labels.push('blah');
+      chart.data.datasets[0].data.push(pricing.price);
+      chart.update();
+    })
     return () => newSocket.close();
-  }, [setSocket]);
+  }, [setSocket, setOData]);
+
+  
 
   return (
     <div className="App">
@@ -127,8 +140,9 @@ function App() {
       ) : (
         <div>Not Connected</div>
       )}
-      <Line options={options} data={data} />;
-
+      <BuyForm />
+      <Chart ref={chartRef} type='line' data={data} />
+      <OrderBook data={oData} />
       </div>
   );
 }

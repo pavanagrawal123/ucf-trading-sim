@@ -101,6 +101,7 @@ var priceHistory = [];
 function getAndEmitPrice() {
   let newPrice = 0;
   if (buyOrderBook.length!=0 && sellOrderBook.length!=0) {
+    
     newPrice = (buyOrderBook[0].price + sellOrderBook[0].price) / 2;
   } else if (priceHistory.length != 0) {
     newPrice = priceHistory[priceHistory.length - 1];
@@ -119,7 +120,8 @@ app.use(express.json());
 app.use(cors());
 
 app.post('/order', (req, res) => {
-  const { price, type, person, quantity } = req.body;
+  let { price, type, person, quantity } = req.body;
+  price = parseFloat(price);
   switch (type) {
     case 'BUY':
       buyOrderBook.push({price, quantity, person, "id": id});

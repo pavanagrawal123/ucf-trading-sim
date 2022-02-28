@@ -108,7 +108,7 @@ const BuyForm = () => {
 }
 
 const onAdd = async (task) => {
-    const res = await fetch("https://9c9f-128-62-33-76.ngrok.io", {
+    const res = await fetch("http://localhost:4000/order", {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
