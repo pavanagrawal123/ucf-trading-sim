@@ -6,9 +6,9 @@ var numAsks = 0;
 const serverStr = 'https://9c9f-128-62-33-76.ngrok.io';
 
 const BuyForm = () => {
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState();
   const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState();
 
   const onSubmitBid = (e) => {
     e.preventDefault();
