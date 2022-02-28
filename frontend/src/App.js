@@ -131,7 +131,7 @@ function App() {
         <title>UCF Trading Sim</title>
         <link rel='canonical' href='http://example.com/example' />
       </Helmet>
-      <header className='p-5 font-bold text-xl bg-indigo-500 text-white text-center'>
+      <header className='p-5 font-bold text-xl bg-emerald-600 text-white text-center'>
         UCF Trading Sim
       </header>
       {/* { socket ? (
