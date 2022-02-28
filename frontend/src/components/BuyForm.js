@@ -1,6 +1,4 @@
 import React from 'react';
-import TextField from '@mui/material/Button';
-import { Button } from '@mui/material';
 import { useState } from 'react';
 
 var numBids = 0;
@@ -48,32 +46,32 @@ const BuyForm = () => {
     <div className='w-screen mt-5 h-full'>
       <div className='mx-10 bg-white rounded-xl h-36 flex flex-col justify-center'>
         <div className='flex flex-row w-full py-2 px-5 justify-around'>
-          <div className=''>
+          <div className='flex flex-col'>
             <label>Name</label>
             <input
-              className='border-2 rounded-lg'
+              className='border-2 rounded-lg h-12 px-2'
               type='text'
-              placeholder='Name'
+              placeholder=' Name'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          <div className=''>
+          <div className='flex flex-col'>
             <label>Price</label>
             <input
-              className='border-2 rounded-lg'
+              className='border-2 rounded-lg h-12 px-2'
               type='number'
-              placeholder='Price'
+              placeholder=' Price'
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
-          <div className=''>
+          <div className='flex flex-col'>
             <label>Quantity</label>
             <input
-              className='border-2 rounded-lg'
+              className='border-2 rounded-lg h-12 px-2'
               type='number'
-              placeholder='Quantity'
+              placeholder=' Quantity'
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
             />

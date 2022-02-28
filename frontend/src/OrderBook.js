@@ -1,6 +1,5 @@
 import './App.css';
 import List from '@mui/material/List';
-import ListItemText from '@mui/material/ListItemText';
 
 function OrderBook({ data }) {
   const buyOrders = data

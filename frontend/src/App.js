@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import Messages from './Messages';
-import MessageInput from './MessageInput';
 import './App.css';
 import moment from 'moment';
 import 'chartjs-plugin-streaming';
 import BuyForm from './components/BuyForm';
 import OrderBook from './OrderBook';
+import { Helmet } from 'react-helmet';
 
 import {
   Chart as ChartJS,
@@ -127,6 +126,11 @@ function App() {
 
   return (
     <div className='flex flex-col bg-slate-100 min-h-screen'>
+      <Helmet>
+        <meta charSet='utf-8' />
+        <title>UCF Trading Sim</title>
+        <link rel='canonical' href='http://example.com/example' />
+      </Helmet>
       <header className='p-5 font-bold text-xl bg-indigo-500 text-white text-center'>
         UCF Trading Sim
       </header>
@@ -136,7 +140,7 @@ function App() {
       ) : (
         <div>Not Connected</div>
       )} */}
-      <div className='w-screen'>  
+      <div className='w-screen'>
         <BuyForm />
       </div>
       <div className='flex flex-row m-5 justify-around'>
