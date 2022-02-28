@@ -7,6 +7,7 @@ import moment from "moment";
 import 'chartjs-plugin-streaming';
 import BuyForm from "./components/BuyForm"
 import OrderBook from './OrderBook';
+
 import {
   Chart as ChartJS,
   LinearScale,
@@ -38,7 +39,7 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Chart.js Line Chart',
+      text: 'Tick Chart',
     },
   },
   scales: {
@@ -82,7 +83,7 @@ export const options = {
   }
 };
 
-const labels = [];
+const labels = [moment().format('LTS')];
 
 export const data = {
   labels,
@@ -118,7 +119,7 @@ function App() {
     });
     newSocket.on('tickPrice', (pricing) => {
       const chart = chartRef.current;
-      chart.data.labels.push('blah');
+      chart.data.labels.push(moment().format('LTS'));
       chart.data.datasets[0].data.push(pricing.price);
       chart.update();
     })
@@ -134,8 +135,6 @@ function App() {
       </header>
       { socket ? (
         <div className="chat-container">
-          <Messages socket={socket} />
-          <MessageInput socket={socket} />
         </div>
       ) : (
         <div>Not Connected</div>

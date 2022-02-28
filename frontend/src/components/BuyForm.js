@@ -85,7 +85,7 @@ const BuyForm = () => {
             onChange={(e) => setAsk(e.currentTarget.checked)}
         />
         </div>
-        <input type='submit' value='Make Bid!!!!' className='btn btn-block' />
+        <input type='submit' value='Make Bid' className='btn btn-block' color='#D2691E' />
     </form>
     // <div>
     //     <h2>Orders:</h2>
