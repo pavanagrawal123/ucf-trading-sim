@@ -5,6 +5,7 @@ import moment from 'moment';
 import 'chartjs-plugin-streaming';
 import BuyForm from './components/BuyForm';
 import OrderBook from './OrderBook';
+import Leaderboard from './components/Leaderboard';
 import { Helmet } from 'react-helmet';
 
 import {
@@ -107,6 +108,7 @@ export function addData(chart, data) {
 function App() {
   const [socket, setSocket] = useState(null);
   const [oData, setOData] = useState(null);
+  const [lData, setLData] = useState(null);
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -150,6 +152,9 @@ function App() {
         <div className='w-[20%] max-h-[70vh] '>
           <OrderBook data={oData} />
         </div>
+      </div>
+      <div className='mx-10 my-5'>
+        <Leaderboard data={lData} />
       </div>
     </div>
   );
