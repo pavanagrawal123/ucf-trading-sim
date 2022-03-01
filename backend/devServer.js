@@ -1,6 +1,6 @@
 const nodemon = require('nodemon');
 const ngrok = require('ngrok');
-const port = process.env.PORT || 4000;
+const port = 4000;
 
 nodemon({
   script: 'index.js',
@@ -12,7 +12,7 @@ let url = null;
 nodemon
   .on('start', async () => {
     if (!url) {
-      url = await ngrok.connect({ port: port });
+      url = await ngrok.connect(port);
       console.log(`Server now available at ${url}`);
     }
   })
