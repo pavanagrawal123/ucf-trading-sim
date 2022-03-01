@@ -79,6 +79,12 @@ function matchOrders() {
   }
 }
 
+function emitPositions(){
+    socket.emit('positions', {
+        positions: Positions,
+    });
+}
+
 function emitOrderMatched(buyer, seller, quantity, price) {
   console.log('matched');
   socket.emit('orderMatched', {
@@ -87,6 +93,7 @@ function emitOrderMatched(buyer, seller, quantity, price) {
     quantity: quantity,
     price: price,
   });
+  emitPositions();
 }
 
 function emitOrderBook() {
